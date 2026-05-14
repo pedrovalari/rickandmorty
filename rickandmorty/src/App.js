@@ -1,146 +1,82 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Header,
+  SearchBar,
+  CharacterGrid,
+  Pagination,
+  Loader,
+  EmptyState,
+  Footer,
+} from './components';
+import { useCharacters } from './hooks/useCharacters';
+import { useDebounce } from './hooks/useDebounce';
 import './App.css';
 
-function App() {
-  const [characters, setCharacters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [info, setInfo] = useState(null);
+const App = () => {
   const [search, setSearch] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const fetchCharacters = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const url = searchTerm 
-        ? `https://rickandmortyapi.com/api/character/?page=${page}&name=${searchTerm}`
-        : `https://rickandmortyapi.com/api/character/?page=${page}`;
-      
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('No characters found');
-      }
-      const data = await response.json();
-      setCharacters(data.results);
-      setInfo(data.info);
-    } catch (err) {
-      setError(err.message);
-      setCharacters([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, searchTerm]);
+  const [page, setPage] = useState(1);
+  const debouncedSearch = useDebounce(search, 350);
 
   useEffect(() => {
-    fetchCharacters();
-  }, [fetchCharacters]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearchTerm(search);
     setPage(1);
-  };
+  }, [debouncedSearch]);
 
-  const handleClearSearch = () => {
-    setSearch('');
-    setSearchTerm('');
-    setPage(1);
-  };
+  const { characters, info, isLoading, isError, error, refetch } = useCharacters({
+    page,
+    name: debouncedSearch,
+  });
+
+  const showEmpty = !isLoading && !isError && characters.length === 0;
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Rick and Morty Characters</h1>
-        <p className="subtitle">Explore the multiverse of characters</p>
-      </header>
+    <div className="app">
+      <Header />
+      <SearchBar value={search} onChange={setSearch} />
 
-      <div className="search-container">
-        <form onSubmit={handleSearch} className="search-form">
-          <input
-            type="text"
-            placeholder="Search characters..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-input"
-          />
-          <button type="submit" className="search-button">Search</button>
-          {searchTerm && (
-            <button type="button" onClick={handleClearSearch} className="clear-button">
-              Clear
-            </button>
+      <main className="app__main">
+        <AnimatePresence mode="wait">
+          {isLoading && <Loader key="loader" />}
+
+          {isError && (
+            <EmptyState
+              key="error"
+              title="Something went wrong"
+              message={error}
+              action={
+                <button type="button" className="app__retry" onClick={refetch}>
+                  Try again
+                </button>
+              }
+            />
           )}
-        </form>
-      </div>
 
-      {loading && (
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading characters...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="error">
-          <p>{error}</p>
-          <button onClick={handleClearSearch} className="retry-button">
-            Show All Characters
-          </button>
-        </div>
-      )}
-
-      {!loading && !error && (
-        <>
-          <div className="characters-grid">
-            {characters.map((character) => (
-              <div key={character.id} className="character-card">
-                <img src={character.image} alt={character.name} />
-                <div className="character-info">
-                  <h3>{character.name}</h3>
-                  <div className="status">
-                    <span className={`status-indicator ${character.status.toLowerCase()}`}></span>
-                    {character.status} - {character.species}
-                  </div>
-                  <div className="details">
-                    <p><strong>Gender:</strong> {character.gender}</p>
-                    <p><strong>Origin:</strong> {character.origin.name}</p>
-                    <p><strong>Location:</strong> {character.location.name}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {info && (
-            <div className="pagination">
-              <button 
-                onClick={() => setPage(page - 1)} 
-                disabled={!info.prev}
-                className="page-button"
-              >
-                Previous
-              </button>
-              <span className="page-info">
-                Page {page} of {info.pages}
-              </span>
-              <button 
-                onClick={() => setPage(page + 1)} 
-                disabled={!info.next}
-                className="page-button"
-              >
-                Next
-              </button>
-            </div>
+          {showEmpty && (
+            <EmptyState
+              key="empty"
+              title="No characters found"
+              message="Try a different search term."
+            />
           )}
-        </>
-      )}
 
-      <footer className="App-footer">
-        <p>Data from <a href="https://rickandmortyapi.com" target="_blank" rel="noopener noreferrer">The Rick and Morty API</a></p>
-      </footer>
+          {!isLoading && !isError && characters.length > 0 && (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CharacterGrid characters={characters} />
+              <Pagination page={page} info={info} onPageChange={setPage} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;

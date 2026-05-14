@@ -5,22 +5,61 @@ A modern, responsive web application to explore characters from the Rick and Mor
 ## Features
 
 - **Browse Characters**: View all characters from the Rick and Morty series
-- **Search Functionality**: Search for characters by name
+- **Debounced Search**: Filter characters by name with instant feedback
 - **Pagination**: Navigate through multiple pages of characters
-- **Character Details**: View status, species, gender, origin, and location for each character
-- **Responsive Design**: Works beautifully on desktop, tablet, and mobile devices
-- **Modern UI**: Beautiful gradient backgrounds and smooth animations
-
-## Live Demo
-
-Deploy this project to see it in action!
+- **Character Details**: Status, species, origin, and location for each character
+- **Minimalist Design**: Clean, distraction-free UI with light/dark mode support
+- **Smooth Animations**: Framer Motion powered transitions and micro-interactions
+- **Responsive Layout**: Works beautifully on desktop, tablet, and mobile devices
 
 ## Technologies Used
 
 - React 18
+- Framer Motion (animations and transitions)
 - Rick and Morty API
-- CSS3 with modern animations
+- CSS Custom Properties (light/dark theming)
 - Create React App
+
+## Architecture
+
+The codebase is organized for scalability and maintainability with clear separation of concerns:
+
+```
+src/
+├── components/          # Reusable UI components (one folder per component)
+│   ├── Header/
+│   ├── SearchBar/
+│   ├── CharacterCard/
+│   ├── CharacterGrid/
+│   ├── Pagination/
+│   ├── Loader/
+│   ├── EmptyState/
+│   ├── Footer/
+│   └── index.js         # Barrel exports
+├── hooks/               # Custom React hooks
+│   ├── useCharacters.js # Data fetching hook
+│   └── useDebounce.js   # Generic debounce hook
+├── services/            # API layer
+│   └── charactersApi.js
+├── constants/           # App-wide constants
+│   ├── api.js
+│   └── animations.js    # Framer Motion variants
+├── utils/               # Pure utility functions
+│   └── character.js
+├── App.js               # Composition root
+├── App.css
+├── index.js
+└── index.css            # Global styles & design tokens
+```
+
+### Design Principles
+
+- **Single Responsibility**: Each component, hook, and service does one thing well
+- **Co-located Styles**: Each component owns its own CSS file
+- **Design Tokens**: Theme values are defined as CSS custom properties in `index.css`
+- **Reusable Animations**: Framer Motion variants are centralized in `constants/animations.js`
+- **Custom Hooks**: Business logic is extracted from components into hooks
+- **Service Layer**: All API calls go through `services/` for easy testing and swapping
 
 ## Getting Started
 
@@ -96,23 +135,6 @@ Your site will be live in minutes with automatic HTTPS and a custom domain!
 1. Build the project: `npm run build`
 2. Go to [Netlify Drop](https://app.netlify.com/drop)
 3. Drag the `build` folder to deploy instantly
-
-## Project Structure
-
-```
-rickandmorty/
-├── public/
-│   ├── index.html
-│   └── manifest.json
-├── src/
-│   ├── App.js          # Main application component
-│   ├── App.css         # Application styles
-│   ├── index.js        # Entry point
-│   └── index.css       # Global styles
-├── netlify.toml        # Netlify configuration
-├── package.json
-└── README.md
-```
 
 ## API Reference
 

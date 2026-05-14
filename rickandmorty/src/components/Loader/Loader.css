@@ -1,0 +1,15 @@
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 80px 24px;
+}
+
+.loader__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text);
+  display: inline-block;
+}
