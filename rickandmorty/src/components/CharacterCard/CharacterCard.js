@@ -1,17 +1,22 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cardVariants } from '../../constants/animations';
 import { getStatusVariant } from '../../utils/character';
 import './CharacterCard.css';
 
+const MotionLink = motion(Link);
+
 const CharacterCard = ({ character }) => {
   const statusVariant = getStatusVariant(character.status);
 
   return (
-    <motion.article
+    <MotionLink
+      to={`/character/${character.id}`}
       className="card"
       variants={cardVariants}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       layout
+      aria-label={`View details for ${character.name}`}
     >
       <div className="card__media">
         <img src={character.image} alt={character.name} loading="lazy" />
@@ -33,7 +38,7 @@ const CharacterCard = ({ character }) => {
           </div>
         </dl>
       </div>
-    </motion.article>
+    </MotionLink>
   );
 };
 

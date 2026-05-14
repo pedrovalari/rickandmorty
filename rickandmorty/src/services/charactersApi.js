@@ -23,3 +23,16 @@ export const fetchCharacters = async ({ page = 1, name = '' } = {}) => {
 
   return response.json();
 };
+
+export const fetchCharacterById = async (id) => {
+  const response = await fetch(`${API_BASE_URL}${ENDPOINTS.CHARACTERS}/${id}`);
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Character not found');
+    }
+    throw new Error(`Failed to fetch character (${response.status})`);
+  }
+
+  return response.json();
+};

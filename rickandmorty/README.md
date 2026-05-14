@@ -7,7 +7,8 @@ A modern, responsive web application to explore characters from the Rick and Mor
 - **Browse Characters**: View all characters from the Rick and Morty series
 - **Debounced Search**: Filter characters by name with instant feedback
 - **Pagination**: Navigate through multiple pages of characters
-- **Character Details**: Status, species, origin, and location for each character
+- **Character Detail Pages**: Dedicated page per character with full bio and episode list
+- **Client-side Routing**: Smooth, animated transitions between list and detail views
 - **Minimalist Design**: Clean, distraction-free UI with light/dark mode support
 - **Smooth Animations**: Framer Motion powered transitions and micro-interactions
 - **Responsive Layout**: Works beautifully on desktop, tablet, and mobile devices
@@ -15,6 +16,7 @@ A modern, responsive web application to explore characters from the Rick and Mor
 ## Technologies Used
 
 - React 18
+- React Router v6 (client-side routing)
 - Framer Motion (animations and transitions)
 - Rick and Morty API
 - CSS Custom Properties (light/dark theming)
@@ -35,18 +37,28 @@ src/
 │   ├── Loader/
 │   ├── EmptyState/
 │   ├── Footer/
+│   ├── BackButton/
+│   ├── ScrollToTop/
 │   └── index.js         # Barrel exports
+├── pages/               # Route-level views
+│   ├── Home/            # Character list, search, pagination
+│   ├── CharacterDetail/ # Single character page with episode list
+│   └── index.js
 ├── hooks/               # Custom React hooks
-│   ├── useCharacters.js # Data fetching hook
-│   └── useDebounce.js   # Generic debounce hook
+│   ├── useCharacters.js # Paginated/searchable list
+│   ├── useCharacter.js  # Single character fetcher
+│   ├── useEpisodes.js   # Multi-episode batch fetcher
+│   └── useDebounce.js
 ├── services/            # API layer
-│   └── charactersApi.js
+│   ├── charactersApi.js
+│   └── episodesApi.js
 ├── constants/           # App-wide constants
 │   ├── api.js
 │   └── animations.js    # Framer Motion variants
 ├── utils/               # Pure utility functions
-│   └── character.js
-├── App.js               # Composition root
+│   ├── character.js
+│   └── url.js
+├── App.js               # Router composition root
 ├── App.css
 ├── index.js
 └── index.css            # Global styles & design tokens
